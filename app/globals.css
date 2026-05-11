@@ -1,26 +1,378 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ════════════════════════════════════════════════════════════════════════════
+   DAMDA — 디자인 토큰 기본값
+════════════════════════════════════════════════════════════════════════════ */
+
+@theme {
+  /* ── 브랜드 기본값 (theme 클래스에서 override) ── */
+  --color-primary:            #E8272D;
+  --color-primary-hover:      #B81E23;
+  --color-primary-subtle:     #FEF2F2;
+  --color-primary-foreground: #FFFFFF;
+
+  --color-secondary:            #B5894E;
+  --color-secondary-hover:      #9A7240;
+  --color-secondary-subtle:     #FAF3E6;
+  --color-secondary-foreground: #3D2B0E;
+
+  --color-price:              #E8272D;
+
+  /* ── Surface ── */
+  --color-bg:      #FFFFFF;
+  --color-surface: #F5F5F5;
+  --color-card:    #FFFFFF;
+
+  /* ── Text ── */
+  --color-ink:        #0A0A0A;
+  --color-ink-muted:  #555555;
+  --color-ink-subtle: #AAAAAA;
+
+  /* ── Border ── */
+  --color-line:        #E2E2E2;
+  --color-line-strong: #C8C8C8;
+
+  /* ── Semantic ── */
+  --color-destructive:        #E8272D;
+  --color-destructive-subtle: #FEF2F2;
+  --color-ok:                 #16A34A;
+  --color-ok-subtle:          #F0FDF4;
+  --color-warn:               #D97706;
+  --color-warn-subtle:        #FFFBEB;
+
+  /* ── Input ── */
+  --color-input-bg:    #F0F0F0;
+  --color-input-ring:  #E8272D;
+
+  /* ── Tailwind 예약어 매핑 (모두 CSS var 체인) ── */
+  --color-background:        var(--color-bg);
+  --color-foreground:        var(--color-ink);
+  --color-foreground-muted:  var(--color-ink-muted);
+  --color-foreground-subtle: var(--color-ink-subtle);
+  --color-border:            var(--color-line);
+  --color-border-strong:     var(--color-line-strong);
+  --color-accent:            var(--color-price);
+  --color-accent-subtle:     var(--color-primary-subtle);
+  --color-ring:              var(--color-primary);
+  --color-input:             var(--color-input-bg);
+  --color-input-focus:       var(--color-primary);
+  --color-destructive-base:  var(--color-destructive);
+  --color-success:           var(--color-ok);
+  --color-success-subtle:    var(--color-ok-subtle);
+  --color-warning:           var(--color-warn);
+  --color-warning-subtle:    var(--color-warn-subtle);
+
+  /* ── Radius ── */
+  --radius-xs:   2px;
+  --radius-sm:   3px;
+  --radius-md:   4px;
+  --radius-lg:   6px;
+  --radius-xl:   8px;
+  --radius-2xl:  10px;
+  --radius-full: 9999px;
+
+  /* ── Typography ── */
+  --font-sans: var(--font-pretendard, "Pretendard Variable"), "Pretendard",
+    -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+
+  --text-2xs:  0.6875rem;
+  --text-xs:   0.8125rem;
+  --text-sm:   0.9375rem;
+  --text-base: 1.0625rem;
+  --text-lg:   1.1875rem;
+  --text-xl:   1.375rem;
+  --text-2xl:  1.625rem;
+  --text-3xl:  2rem;
+
+  /* ── Shadow ── */
+  --shadow-sm:   0 1px 2px rgb(0 0 0 / 0.06);
+  --shadow-md:   0 4px 12px rgb(0 0 0 / 0.08);
+  --shadow-lg:   0 12px 24px rgb(0 0 0 / 0.10);
+  --shadow-card: 0 0 0 1px #E2E2E2;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* ════════════════════════════════════════════════════════════════════════════
+   기본 스타일
+════════════════════════════════════════════════════════════════════════════ */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   THEME 1 — editorial (클린 화이트 + 레드 · Wink 스타일)
+════════════════════════════════════════════════════════════════════════════ */
+
+.theme-editorial {
+  /* 앱 내부 배경 = 거의 화이트 */
+  --color-bg:          #FAFAF9;
+  /* 사이드바 / surface = body 바깥 배경과 같은 톤 */
+  --color-surface:     #ECEAE6;
+  --color-card:        #FFFFFF;
+  --color-ink:         #111111;
+  --color-ink-muted:   #555550;
+  --color-ink-subtle:  #999994;
+  --color-line:        #E6E4E0;
+  --color-line-strong: #D0CEC9;
+  --color-input-bg:    #F0EFEC;
+  --color-primary:            #E8272D;
+  --color-primary-hover:      #B81E23;
+  --color-primary-subtle:     #FEF2F2;
+  --color-primary-foreground: #FFFFFF;
+  --color-price:              #E8272D;
+  --color-secondary:            #B5894E;
+  --color-secondary-hover:      #9A7240;
+  --color-secondary-subtle:     #FAF3E6;
+  --color-secondary-foreground: #3D2B0E;
+  --radius-xs: 3px; --radius-sm: 5px; --radius-md: 8px;
+  --radius-lg: 12px; --radius-xl: 16px; --radius-2xl: 20px;
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 0 0 1px #E6E4E0;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   THEME 2 — warm (웜 크림 · Epalladio 스타일)
+════════════════════════════════════════════════════════════════════════════ */
+
+.theme-warm {
+  --color-bg:          #FAF6EF;
+  --color-surface:     #F0E9D8;
+  --color-card:        #FEF9F2;
+  --color-ink:         #2C1A0E;
+  --color-ink-muted:   #6B4A35;
+  --color-ink-subtle:  #A08060;
+  --color-line:        #E0D4C0;
+  --color-line-strong: #C8BCAA;
+  --color-input-bg:    #ECE4D4;
+  --color-primary:            #B5340A;
+  --color-primary-hover:      #8C2608;
+  --color-primary-subtle:     #FBF0EA;
+  --color-primary-foreground: #FFFFFF;
+  --color-price:              #B5340A;
+  --color-secondary:            #8B6420;
+  --color-secondary-hover:      #6A4C18;
+  --color-secondary-subtle:     #F8F0DC;
+  --color-secondary-foreground: #3A2808;
+  --radius-xs: 2px; --radius-sm: 3px; --radius-md: 5px;
+  --radius-lg: 8px; --radius-xl: 12px; --radius-2xl: 16px;
+  --shadow-card: 0 1px 4px rgba(80,40,10,0.10), 0 0 0 1px #E0D4C0;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   THEME 3 — playful (플레이풀 · Rayo 스타일 · 둥근 모서리)
+════════════════════════════════════════════════════════════════════════════ */
+
+.theme-playful {
+  --color-bg:          #FFF8F2;
+  --color-surface:     #FFE8D8;
+  --color-card:        #FFFFFF;
+  --color-ink:         #1A0800;
+  --color-ink-muted:   #7A3A18;
+  --color-ink-subtle:  #C09060;
+  --color-line:        #F4D4B8;
+  --color-line-strong: #E8C4A0;
+  --color-input-bg:    #FFE0CC;
+  --color-primary:            #D93420;
+  --color-primary-hover:      #B82010;
+  --color-primary-subtle:     #FFF0EE;
+  --color-primary-foreground: #FFFFFF;
+  --color-price:              #D93420;
+  --color-secondary:            #E8880A;
+  --color-secondary-hover:      #C06808;
+  --color-secondary-subtle:     #FFF4E0;
+  --color-secondary-foreground: #4A2800;
+  --radius-xs: 8px; --radius-sm: 12px; --radius-md: 18px;
+  --radius-lg: 24px; --radius-xl: 32px; --radius-2xl: 9999px;
+  --shadow-card: 0 3px 10px rgba(180,60,0,0.12), 0 0 0 1px #F4D4B8;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   THEME 4 — peach (피치 · Fairy Drinks 스타일)
+════════════════════════════════════════════════════════════════════════════ */
+
+.theme-peach {
+  --color-bg:          #FFF3EC;
+  --color-surface:     #FFE4D0;
+  --color-card:        #FFFAF7;
+  --color-ink:         #2A1208;
+  --color-ink-muted:   #884020;
+  --color-ink-subtle:  #C48060;
+  --color-line:        #F0D0BC;
+  --color-line-strong: #E0BCA8;
+  --color-input-bg:    #FFE0CC;
+  --color-primary:            #E05820;
+  --color-primary-hover:      #C04010;
+  --color-primary-subtle:     #FFF0E8;
+  --color-primary-foreground: #FFFFFF;
+  --color-price:              #E05820;
+  --color-secondary:            #C4781A;
+  --color-secondary-hover:      #A05C10;
+  --color-secondary-subtle:     #FFF2D8;
+  --color-secondary-foreground: #3A2000;
+  --radius-xs: 4px; --radius-sm: 6px; --radius-md: 10px;
+  --radius-lg: 14px; --radius-xl: 20px; --radius-2xl: 28px;
+  --shadow-card: 0 2px 6px rgba(180,60,20,0.10), 0 0 0 1px #F0D0BC;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   THEME 5 — bold (볼드 옐로 · Luffy Donuts 스타일)
+════════════════════════════════════════════════════════════════════════════ */
+
+.theme-bold {
+  --color-bg:          #FFFCE8;
+  --color-surface:     #FFF4C0;
+  --color-card:        #FFFFFF;
+  --color-ink:         #0A0A00;
+  --color-ink-muted:   #3A3A10;
+  --color-ink-subtle:  #888840;
+  --color-line:        #EEEAA0;
+  --color-line-strong: #DDDD80;
+  --color-input-bg:    #FFF8C8;
+  --color-primary:            #111111;
+  --color-primary-hover:      #333333;
+  --color-primary-subtle:     #F4F4F4;
+  --color-primary-foreground: #FFFFFF;
+  --color-price:              #111111;
+  --color-secondary:            #C08010;
+  --color-secondary-hover:      #9A6008;
+  --color-secondary-subtle:     #FFF4D0;
+  --color-secondary-foreground: #3A2000;
+  --radius-xs: 1px; --radius-sm: 2px; --radius-md: 3px;
+  --radius-lg: 4px; --radius-xl: 6px; --radius-2xl: 8px;
+  --shadow-card: 0 2px 0 #111111, 0 3px 6px rgba(0,0,0,0.15);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   THEME 6 — mono (모노 · 뉴트럴 미니멀)
+════════════════════════════════════════════════════════════════════════════ */
+
+.theme-mono {
+  --color-bg:          #F8F8F6;
+  --color-surface:     #EEEEED;
+  --color-card:        #FFFFFF;
+  --color-ink:         #111111;
+  --color-ink-muted:   #444444;
+  --color-ink-subtle:  #888888;
+  --color-line:        #DDDDDB;
+  --color-line-strong: #CCCCCA;
+  --color-input-bg:    #E8E8E6;
+  --color-primary:            #444444;
+  --color-primary-hover:      #222222;
+  --color-primary-subtle:     #F0F0EE;
+  --color-primary-foreground: #FFFFFF;
+  --color-price:              #111111;
+  --color-secondary:            #777777;
+  --color-secondary-hover:      #555555;
+  --color-secondary-subtle:     #F0F0EF;
+  --color-secondary-foreground: #111111;
+  --radius-xs: 3px; --radius-sm: 5px; --radius-md: 8px;
+  --radius-lg: 10px; --radius-xl: 14px; --radius-2xl: 18px;
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.08), 0 0 0 1px #DDDDDB;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   THEME 7 — wink-red (마지막 시안 + 레드 · Wink 에디토리얼)
+════════════════════════════════════════════════════════════════════════════ */
+
+.theme-wink-red {
+  --color-bg:          #F7F4EF;
+  --color-surface:     #EEE9E2;
+  --color-card:        #FFFFFF;
+  --color-ink:         #111111;
+  --color-ink-muted:   #4A4A48;
+  --color-ink-subtle:  #888886;
+  --color-line:        #D8D4CE;
+  --color-line-strong: #C8C4BE;
+  --color-input-bg:    #E8E4DE;
+  --color-primary:            #E8272D;
+  --color-primary-hover:      #B81E23;
+  --color-primary-subtle:     #FEF2F2;
+  --color-primary-foreground: #FFFFFF;
+  --color-price:              #E8272D;
+  --color-secondary:            #B5894E;
+  --color-secondary-hover:      #9A7240;
+  --color-secondary-subtle:     #FAF3E6;
+  --color-secondary-foreground: #3D2B0E;
+  --radius-xs: 3px; --radius-sm: 5px; --radius-md: 8px;
+  --radius-lg: 12px; --radius-xl: 16px; --radius-2xl: 22px;
+  --shadow-card: 0 1px 4px rgba(0,0,0,0.08), 0 0 0 1px #D8D4CE;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   THEME 8 — wink-black (마지막 시안 + 블랙 · Wink 에디토리얼)
+════════════════════════════════════════════════════════════════════════════ */
+
+.theme-wink-black {
+  --color-bg:          #F7F4EF;
+  --color-surface:     #EEE9E2;
+  --color-card:        #FFFFFF;
+  --color-ink:         #111111;
+  --color-ink-muted:   #4A4A48;
+  --color-ink-subtle:  #888886;
+  --color-line:        #D8D4CE;
+  --color-line-strong: #C8C4BE;
+  --color-input-bg:    #E8E4DE;
+  --color-primary:            #111111;
+  --color-primary-hover:      #333333;
+  --color-primary-subtle:     #F0EFEE;
+  --color-primary-foreground: #FFFFFF;
+  --color-price:              #333333;
+  --color-secondary:            #B5894E;
+  --color-secondary-hover:      #9A7240;
+  --color-secondary-subtle:     #FAF3E6;
+  --color-secondary-foreground: #3D2B0E;
+  --radius-xs: 3px; --radius-sm: 5px; --radius-md: 8px;
+  --radius-lg: 12px; --radius-xl: 16px; --radius-2xl: 22px;
+  --shadow-card: 0 1px 4px rgba(0,0,0,0.08), 0 0 0 1px #D8D4CE;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   THEME 9 — dark (다크)
+════════════════════════════════════════════════════════════════════════════ */
+
+.theme-dark {
+  --color-bg:          #0F0F0F;
+  --color-surface:     #1A1A1A;
+  --color-card:        #222222;
+  --color-ink:         #F2EDE8;
+  --color-ink-muted:   #998F85;
+  --color-ink-subtle:  #5C5650;
+  --color-line:        #2E2E2E;
+  --color-line-strong: #3E3E3E;
+  --color-input-bg:    #2A2A2A;
+  --color-primary:            #FF4046;
+  --color-primary-hover:      #E8272D;
+  --color-primary-subtle:     #2A0A0B;
+  --color-primary-foreground: #FFFFFF;
+  --color-price:              #FF6B6B;
+  --color-secondary:            #D4A96A;
+  --color-secondary-hover:      #B8904E;
+  --color-secondary-subtle:     #2A1F0A;
+  --color-secondary-foreground: #FAF3E6;
+  --color-destructive:        #FF4046;
+  --color-destructive-subtle: #2A0A0B;
+  --color-ok:                 #34D399;
+  --color-ok-subtle:          #052E22;
+  --color-warn:               #FBBF24;
+  --color-warn-subtle:        #2A1F04;
+  --color-input-ring:  #FF4046;
+  --radius-xs: 4px; --radius-sm: 6px; --radius-md: 10px;
+  --radius-lg: 12px; --radius-xl: 16px; --radius-2xl: 20px;
+  --shadow-card: 0 2px 12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   토스트 애니메이션
+════════════════════════════════════════════════════════════════════════════ */
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+.animate-toast {
+  animation: toast-in 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

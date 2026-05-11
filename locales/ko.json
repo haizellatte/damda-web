@@ -1,0 +1,107 @@
+{
+  "app": {
+    "name": "담다",
+    "tagline": "통합 장바구니"
+  },
+  "common": {
+    "required": "{{field}}을(를) 입력해주세요.",
+    "too_long": "{{field}}은(는) 최대 {{max}}자까지 입력할 수 있어요.",
+    "invalid": "올바른 {{field}} 형식이 아니에요.",
+    "positive": "{{field}}은(는) 0보다 큰 값을 입력해주세요.",
+    "saving": "저장 중...",
+    "loading": "불러오는 중..."
+  },
+  "field": {
+    "url": "URL",
+    "image_url": "이미지 URL",
+    "title": "상품명",
+    "price": "가격",
+    "category_name": "카테고리 이름",
+    "memo": "메모"
+  },
+  "api": {
+    "scrape": {
+      "url_required": "URL이 필요합니다.",
+      "invalid_url": "유효하지 않은 URL이에요.",
+      "http_error": "페이지를 가져올 수 없어요.",
+      "timeout": "요청 시간이 초과되었어요.",
+      "request_error": "페이지를 불러오는 중 오류가 발생했어요.",
+      "bot_blocked": "이 쇼핑몰은 자동 정보 수집을 차단하고 있어요. 상품명과 가격을 직접 입력해주세요.",
+      "app_link_error": "앱 전용 링크예요. 브라우저에서 열리는 웹 링크를 붙여넣어 주세요.",
+      "failed": "상품 정보를 가져오지 못했어요."
+    }
+  },
+  "product": {
+    "add": "담기",
+    "saving": "저장 중...",
+    "loading": "상품 정보 가져오는 중...",
+    "duplicate": "이미 담긴 상품이에요",
+    "add_success": "상품을 담았어요",
+    "delete_button": "상품 삭제",
+    "url_placeholder": "쇼핑몰 링크를 붙여넣기 하세요",
+    "url_input_label": "상품 URL 입력",
+    "add_error": "상품을 담지 못했어요. 다시 시도해주세요.",
+    "invalid_url": "올바른 URL을 입력해주세요.",
+    "memo_placeholder": "메모를 남겨보세요 (선택사항)",
+    "memo_label": "메모",
+    "price_disclaimer": "실제 가격과 다를 수 있어요",
+    "total_items": "총 {{count}}개"
+  },
+  "sort": {
+    "label": "정렬",
+    "recent": "최신순",
+    "mall": "쇼핑몰순",
+    "price_asc": "낮은 가격순",
+    "price_desc": "높은 가격순",
+    "category": "카테고리순"
+  },
+  "category": {
+    "label": "카테고리",
+    "select_short": "카테고리",
+    "none": "없음",
+    "select": "카테고리 선택",
+    "add": "새 카테고리 추가",
+    "add_new": "카테고리 추가",
+    "add_placeholder": "카테고리 이름 입력",
+    "add_button": "추가",
+    "add_card": "+ 카테고리",
+    "delete_button": "카테고리 삭제",
+    "no_categories": "카테고리가 없어요",
+    "edit": "카테고리 변경",
+    "uncategorized": "미분류",
+    "other": "기타"
+  },
+  "memo": {
+    "label": "메모",
+    "placeholder": "메모를 남겨보세요",
+    "add": "메모 추가",
+    "edit": "메모 편집",
+    "none": "메모 없음"
+  },
+  "empty": {
+    "no_products": "아직 담긴 상품이 없어요",
+    "no_products_filtered": "해당 조건의 상품이 없어요",
+    "no_products_desc": "쇼핑몰 상품 링크를 아래 입력창에\n붙여넣으면 바로 담을 수 있어요",
+    "no_products_filtered_desc": "다른 필터를 선택해보세요",
+    "go_to_input": "링크 입력창으로 이동"
+  },
+  "theme": {
+    "switch_to_light": "라이트 모드로 전환",
+    "switch_to_dark": "다크 모드로 전환"
+  },
+  "filter": {
+    "all": "전체"
+  },
+  "shelf": {
+    "page_title": "보관함",
+    "archive_title": "보관 중",
+    "bought_title": "구매 완료",
+    "archive_empty": "보관해 둔 상품이 없어요.\n카드에서 보관 아이콘을 누르면 이곳으로 옮길 수 있어요.",
+    "bought_empty": "표시해 둔 구매 상품이 없어요.\n카드에서 체크 아이콘을 누르면 이곳으로 옮길 수 있어요.",
+    "go_inbox": "메인 목록으로",
+    "back_home": "담다로 돌아가기",
+    "to_archive": "보관함으로 보내기",
+    "to_purchased": "구매 완료로 보내기",
+    "restore_inbox": "메인 목록으로 되돌리기"
+  }
+}
