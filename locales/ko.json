@@ -89,6 +89,11 @@
     "switch_to_light": "라이트 모드로 전환",
     "switch_to_dark": "다크 모드로 전환"
   },
+  "nav": {
+    "inbox": "담다",
+    "archived": "보관함",
+    "bought": "구매 완료"
+  },
   "filter": {
     "all": "전체"
   },

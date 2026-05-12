@@ -46,7 +46,6 @@ const ProductCard = ({ product, listVariant = "inbox" }: ProductCardProps) => {
   const { mutate: deleteProduct, isPending: isDeleting } = useDeleteProduct();
   const { mutate: updateProduct } = useUpdateProduct();
   const [imgError, setImgError] = useState(false);
-  const [showCategoryEdit, setShowCategoryEdit] = useState(false);
   const categories = useCategoryStore((s) => s.categories);
 
   const mallLabel = product.mall_name
@@ -82,14 +81,8 @@ const ProductCard = ({ product, listVariant = "inbox" }: ProductCardProps) => {
     updateProduct({ id: product.id, updates: { shelf } });
   };
 
-  const handleCategoryClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setShowCategoryEdit(true);
-  };
-
   const handleCategorySelect = (id: string | null) => {
     updateProduct({ id: product.id, updates: { category_id: id } });
-    setShowCategoryEdit(false);
   };
 
   const isInbox = listVariant === "inbox";
@@ -179,35 +172,12 @@ const ProductCard = ({ product, listVariant = "inbox" }: ProductCardProps) => {
         role="presentation"
       >
         <div className="flex min-w-0 flex-1 items-center">
-          {showCategoryEdit ? (
-            /* autoOpen=true: 마운트 즉시 패널이 열리고, 선택 없이 닫히면 초기 상태로 복귀 */
-            <CategoryPicker
-              selectedId={product.category_id}
-              onSelect={handleCategorySelect}
-              autoOpen
-              onClose={() => setShowCategoryEdit(false)}
-              compact
-            />
-          ) : (
-            <button
-              type="button"
-              aria-label={t("category.edit")}
-              onClick={handleCategoryClick}
-              className={cn(
-                "inline-flex max-w-full items-center rounded-full border px-2.5 py-1 text-sm font-medium transition-colors",
-                "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-secondary",
-                category
-                  ? "border-secondary/40 bg-secondary-subtle text-secondary hover:bg-secondary-subtle/80"
-                  : "border-dashed border-border text-foreground-subtle hover:border-secondary/50 hover:text-foreground-muted",
-              )}
-            >
-              {category ? (
-                <span className="truncate">{category.name}</span>
-              ) : (
-                <span>{t("category.add_card")}</span>
-              )}
-            </button>
-          )}
+          <CategoryPicker
+            selectedId={product.category_id}
+            onSelect={handleCategorySelect}
+            compact
+            addStyle
+          />
         </div>
 
         {product.base_price != null && (

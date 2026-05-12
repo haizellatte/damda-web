@@ -54,7 +54,7 @@ const FilterChip = ({ label, isActive, onClick }: FilterChipProps) => (
       "flex h-9 shrink-0 items-center rounded-full px-4 text-sm font-medium transition-colors",
       isActive
         ? "bg-primary text-primary-foreground"
-        : "border border-border bg-card text-foreground-muted hover:bg-surface hover:text-foreground",
+        : "border border-border bg-card text-foreground-muted hover:bg-foreground/[0.06] hover:text-foreground",
     )}
   >
     {label}

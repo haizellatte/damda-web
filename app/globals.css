@@ -109,16 +109,14 @@ body {
 ════════════════════════════════════════════════════════════════════════════ */
 
 .theme-editorial {
-  /* 앱 내부 배경 = 거의 화이트 */
   --color-bg:          #FAFAF9;
-  /* 사이드바 / surface = body 바깥 배경과 같은 톤 */
-  --color-surface:     #ECEAE6;
+  --color-surface:     #EDEBE6;
   --color-card:        #FFFFFF;
   --color-ink:         #111111;
-  --color-ink-muted:   #555550;
-  --color-ink-subtle:  #999994;
-  --color-line:        #E6E4E0;
-  --color-line-strong: #D0CEC9;
+  --color-ink-muted:   #525250;
+  --color-ink-subtle:  #97948F;
+  --color-line:        #E4E1DC;
+  --color-line-strong: #CECCCA;
   --color-input-bg:    #F0EFEC;
   --color-primary:            #E8272D;
   --color-primary-hover:      #B81E23;

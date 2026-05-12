@@ -34,7 +34,7 @@ export const extractDomain = (url: string): string => {
  * "https://m.wconcept.co.kr/..." → "wconcept"
  * "https://applink.a-bly.com/..." → "a-bly"
  */
-const STRIPPED_SUBDOMAINS = new Set(["www", "m", "app", "mobile", "store", "shop", "applink", "link", "api"]);
+const STRIPPED_SUBDOMAINS = new Set(["www", "m", "app", "mobile", "store", "shop", "applink", "link", "api", "display"]);
 
 export const extractMallKey = (url: string): string | null => {
   try {

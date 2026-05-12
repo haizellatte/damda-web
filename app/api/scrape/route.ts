@@ -43,6 +43,17 @@ const isWconceptHost = (hostname: string): boolean => {
   return h === "wconcept.co.kr" || h.endsWith(".wconcept.co.kr");
 };
 
+/** og:title 또는 og:description 이 W컨셉 브랜드명만 있는 경우 감지 */
+const isGenericWconceptTitle = (s: string): boolean => {
+  const n = s.replace(/\s+/g, " ").trim();
+  return (
+    /^\[?\s*W\s*CONCEPT\s*\]?$/i.test(n) ||
+    /^W컨셉\(W\s*CONCEPT\)$/i.test(n) ||
+    /^W\s*Concept$/i.test(n) ||
+    /^나만의\s*컨셉.*W컨셉$/i.test(n)
+  );
+};
+
 type WconceptItemJson = {
   FinalPrice?: number;
   CustomerPrice?: number;
@@ -54,12 +65,17 @@ type WconceptItemJson = {
   CategoryDepthname3?: string;
 };
 
-/** W컨셉 PC/모바일 — og:title 이 "[W CONCEPT]" 로만 오는 경우가 많아 GA 히든 필드·설명 메타를 사용 */
+/**
+ * W컨셉 PC/모바일 — og:title 이 "[W CONCEPT]" 로만 오는 경우가 많아
+ * GA4 히든 필드·og:description 을 사용하여 실제 상품명/가격 추출
+ */
 const extractWconceptProduct = (
   $: ReturnType<typeof cheerio.load>,
 ): { title: string | null; base_price: number | null; retail_category: string | null } => {
   const ogDesc = $(`meta[property="og:description"]`).attr("content")?.trim() ?? null;
-  let title: string | null = ogDesc && ogDesc.length > 0 ? ogDesc : null;
+  const usableOgDesc = ogDesc && ogDesc.length > 0 && !isGenericWconceptTitle(ogDesc) ? ogDesc : null;
+
+  let title: string | null = usableOgDesc;
   let base_price: number | null = null;
   let retail_category: string | null = null;
 
@@ -89,8 +105,9 @@ const extractWconceptProduct = (
     }
   }
 
-  if (!title || /^\[?\s*W\s*CONCEPT\s*\]?$/i.test(title.replace(/\s+/g, " ").trim())) {
-    title = ogDesc;
+  // title 이 아직 generic 이거나 null 이면 og:description 으로 대체
+  if (!title || isGenericWconceptTitle(title)) {
+    title = usableOgDesc;
   }
 
   return { title, base_price, retail_category };
@@ -302,7 +319,12 @@ export const GET = async (req: NextRequest) => {
   if (isWconceptHost(parsedUrl.hostname)) {
     const w = extractWconceptProduct($);
     if (w.retail_category) retail_category = w.retail_category;
-    if (w.title && w.title.trim()) finalTitle = w.title.trim();
+    if (w.title && w.title.trim() && !isGenericWconceptTitle(w.title)) {
+      finalTitle = w.title.trim();
+    } else if (isGenericWconceptTitle(finalTitle)) {
+      // display.wconcept.co.kr 등 CSR 전용 사이트 — 상품 데이터 없음
+      finalTitle = "";
+    }
     if (w.base_price != null) base_price = w.base_price;
   }
 

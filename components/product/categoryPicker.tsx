@@ -3,6 +3,7 @@
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   type KeyboardEvent,
@@ -17,124 +18,111 @@ type CategoryPickerProps = {
   selectedId: string | null;
   onSelect: (id: string | null) => void;
   compact?: boolean;
-  /** true → 마운트 즉시 패널 열기. 선택 없이 닫히면 onClose 호출 */
-  autoOpen?: boolean;
-  onClose?: () => void;
+  /**
+   * true → 미선택 상태일 때 dashed border + "+ 카테고리" 스타일로 표시
+   * (ProductCard 인라인 사용 시)
+   */
+  addStyle?: boolean;
 };
 
 const PANEL_MIN_W = 224;
-const PANEL_Z     = 300;
-/* 패널 최대 예상 높이 — 실제 렌더 전 공간 계산에 사용 */
+const PANEL_Z = 300;
 const PANEL_EST_H = 300;
 
 const CategoryPicker = ({
   selectedId,
   onSelect,
   compact = false,
-  autoOpen = false,
-  onClose,
+  addStyle = false,
 }: CategoryPickerProps) => {
   const { categories, addCategory } = useCategoryStore();
-  const [isOpen,    setIsOpen]   = useState(false);
-  const [newName,   setNewName]  = useState("");
-  const [isAdding,  setIsAdding] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [isAdding, setIsAdding] = useState(false);
   const [panelStyle, setPanelStyle] = useState<React.CSSProperties>({
     visibility: "hidden",
   });
 
-  const containerRef = useRef<HTMLDivElement>(null);
-  const panelRef     = useRef<HTMLDivElement>(null);
-  const addInputRef  = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const addInputRef = useRef<HTMLInputElement>(null);
 
   const selected = categories.find((c) => c.id === selectedId) ?? null;
 
-  const closePanel = useCallback((withSelection: boolean) => {
+  const closePanel = useCallback(() => {
     setIsOpen(false);
     setIsAdding(false);
     setNewName("");
     setPanelStyle({ visibility: "hidden" });
-    if (!withSelection && autoOpen) onClose?.();
-  }, [autoOpen, onClose]);
+  }, []);
 
-  /* ── 포지션 계산 ─────────────────────────────────────────────────────── */
-  const updatePanelPosition = useCallback(() => {
-    const trigger = containerRef.current;
-    if (!trigger) return;
-
-    const rect = trigger.getBoundingClientRect();
-    const vw   = window.innerWidth;
-    const vh   = window.innerHeight;
-    /* 실제 패널 높이가 있으면 사용, 없으면 추정값 */
-    const panelH = panelRef.current?.offsetHeight || PANEL_EST_H;
+  /* ── 포지션 계산 헬퍼 ── */
+  const calcPosition = useCallback((triggerRect: DOMRect, panelH = PANEL_EST_H): React.CSSProperties => {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
     const margin = 8;
 
-    const spaceBelow = vh - rect.bottom - margin;
-    const openAbove  = spaceBelow < panelH && rect.top > panelH;
+    const spaceBelow = vh - triggerRect.bottom - margin;
+    const openAbove = spaceBelow < panelH && triggerRect.top > panelH;
 
-    let top: number;
-    if (openAbove) {
-      top = rect.top - panelH - 6;
-    } else {
-      top = rect.bottom + 6;
-    }
+    let top = openAbove ? triggerRect.top - panelH - 6 : triggerRect.bottom + 6;
     top = Math.max(margin, Math.min(top, vh - panelH - margin));
 
-    const w    = Math.max(PANEL_MIN_W, rect.width);
-    let   left = rect.left;
+    const w = Math.max(PANEL_MIN_W, triggerRect.width);
+    let left = triggerRect.left;
     if (left + w > vw - margin) left = vw - margin - w;
     left = Math.max(margin, left);
 
-    setPanelStyle({ position: "fixed", top, left, width: w, zIndex: PANEL_Z, visibility: "visible" });
+    return { position: "fixed", top, left, width: w, zIndex: PANEL_Z };
   }, []);
 
-  /* ── isOpen → 포지션 계산 (DOM 완전 렌더 이후 실행) ─────────────────── */
-  useEffect(() => {
-    if (!isOpen) return;
-    /* setTimeout(0): 이 틱이 끝나고 브라우저가 포털 DOM을 실제로 페인트한 뒤 실행 */
-    const timer = setTimeout(() => updatePanelPosition(), 0);
-    return () => clearTimeout(timer);
-  }, [isOpen, isAdding, categories.length, updatePanelPosition]);
+  /* ── 패널이 열린 후 실제 높이로 위치 보정 (paint 전 동기 실행) ── */
+  useLayoutEffect(() => {
+    if (!isOpen || !panelRef.current || !containerRef.current) return;
+    const panelH = panelRef.current.offsetHeight;
+    const rect = containerRef.current.getBoundingClientRect();
+    const pos = calcPosition(rect, panelH);
+    setPanelStyle({ ...pos, visibility: "visible" });
+  }, [isOpen, isAdding, categories.length, calcPosition]);
 
-  /* ── 스크롤/리사이즈 시 재계산 ───────────────────────────────────────── */
+  /* ── 스크롤/리사이즈 시 재계산 ── */
   useEffect(() => {
     if (!isOpen) return;
-    const update = () => updatePanelPosition();
+    const update = () => {
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const panelH = panelRef.current?.offsetHeight || PANEL_EST_H;
+      setPanelStyle({ ...calcPosition(rect, panelH), visibility: "visible" });
+    };
     window.addEventListener("scroll", update, true);
     window.addEventListener("resize", update);
     return () => {
       window.removeEventListener("scroll", update, true);
       window.removeEventListener("resize", update);
     };
-  }, [isOpen, updatePanelPosition]);
+  }, [isOpen, calcPosition]);
 
-  /* ── autoOpen: 마운트 즉시 열기 (rAF 대신 setTimeout 0) ────────────── */
-  useEffect(() => {
-    if (!autoOpen) return;
-    const timer = setTimeout(() => setIsOpen(true), 0);
-    return () => clearTimeout(timer);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  /* ── 외부 클릭 닫기 ─────────────────────────────────────────────────── */
+  /* ── 외부 클릭 닫기 ── */
   useEffect(() => {
     if (!isOpen) return;
     const handleOutside = (e: MouseEvent) => {
       const target = e.target as Node;
       if (containerRef.current?.contains(target)) return;
       if (panelRef.current?.contains(target)) return;
-      closePanel(false);
+      closePanel();
     };
     document.addEventListener("mousedown", handleOutside);
     return () => document.removeEventListener("mousedown", handleOutside);
-  }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isOpen, closePanel]);
 
-  /* ── 추가 인풋 포커스 ───────────────────────────────────────────────── */
+  /* ── 추가 인풋 포커스 ── */
   useEffect(() => {
     if (isAdding) addInputRef.current?.focus();
   }, [isAdding]);
 
   const handleSelect = (id: string | null) => {
     onSelect(id);
-    closePanel(true);
+    closePanel();
   };
 
   const handleAddConfirm = () => {
@@ -145,11 +133,23 @@ const CategoryPicker = ({
   };
 
   const handleAddKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter")  { e.preventDefault(); handleAddConfirm(); }
+    if (e.key === "Enter") { e.preventDefault(); handleAddConfirm(); }
     if (e.key === "Escape") { setIsAdding(false); setNewName(""); }
   };
 
-  /* ── 패널 JSX ───────────────────────────────────────────────────────── */
+  /* 클릭 시점에 트리거 rect를 동기로 측정 → 초기 위치를 즉시 세팅 */
+  const handleToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    if (isOpen) {
+      closePanel();
+      return;
+    }
+    const rect = e.currentTarget.getBoundingClientRect();
+    setPanelStyle({ ...calcPosition(rect), visibility: "hidden" });
+    setIsOpen(true);
+  };
+
+  /* ── 패널 JSX ── */
   const panel = isOpen && (
     <div
       ref={panelRef}
@@ -235,56 +235,42 @@ const CategoryPicker = ({
   );
 
   return (
-    <div ref={containerRef} className="relative">
-      {autoOpen ? (
-        /*
-         * autoOpen 모드: 실제 버튼과 동일한 크기의 invisible anchor.
-         * containerRef 가 정확한 rect 를 갖도록 display/size 유지.
-         */
-        <div
-          className={cn(
-            "invisible pointer-events-none inline-flex items-center gap-1.5",
-            "rounded-full border font-medium",
-            compact ? "h-9 px-3 text-sm" : "h-10 px-4 text-base",
-          )}
-          aria-hidden="true"
-        >
-          <span>{selected ? selected.name : t("category.select_short")}</span>
-        </div>
-      ) : (
-        <button
-          type="button"
-          aria-haspopup="listbox"
-          aria-expanded={isOpen}
-          aria-label={t("category.select")}
-          onClick={() => setIsOpen((p) => !p)}
-          className={cn(
-            "inline-flex items-center gap-1.5 rounded-full border font-medium transition-colors",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1",
-            compact ? "h-9 px-3 text-sm" : "h-10 px-4 text-base",
-            selected
-              ? "border-secondary/40 bg-secondary-subtle text-secondary"
-              : "border-border bg-surface text-foreground-muted hover:border-border-strong hover:bg-card hover:text-foreground",
-          )}
-        >
-          <span className="max-w-[140px] truncate">
-            {selected ? selected.name : t("category.select_short")}
-          </span>
-        </button>
-      )}
+    <>
+      <button
+        ref={containerRef}
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        aria-label={t("category.select")}
+        onClick={handleToggle}
+        className={cn(
+          "inline-flex items-center justify-center gap-1.5 rounded-full border font-medium transition-colors",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1",
+          compact ? "h-8 min-w-[3rem] px-3 text-sm" : "h-9 min-w-[5rem] px-4 text-base",
+          selected
+            ? "border-secondary/40 bg-secondary-subtle text-secondary"
+            : addStyle
+              ? "border-dashed border-border text-foreground-subtle hover:border-secondary/50 hover:text-foreground-muted"
+              : "border-border bg-surface text-foreground-muted hover:border-border-strong hover:bg-foreground/[0.06] hover:text-foreground",
+        )}
+      >
+        <span className="max-w-[140px] truncate">
+          {selected ? selected.name : addStyle ? t("category.add_card") : t("category.select_short")}
+        </span>
+      </button>
 
       {typeof document !== "undefined" && panel != null &&
         createPortal(panel, document.body)}
-    </div>
+    </>
   );
 };
 
-/* ── 옵션 로우 ─────────────────────────────────────────────────────────────── */
+/* ── 옵션 로우 ── */
 
 type OptionRowProps = {
-  label:      string;
+  label: string;
   isSelected: boolean;
-  onClick:    () => void;
+  onClick: () => void;
 };
 
 const OptionRow = ({ label, isSelected, onClick }: OptionRowProps) => (
@@ -297,7 +283,7 @@ const OptionRow = ({ label, isSelected, onClick }: OptionRowProps) => (
       "flex w-full items-center gap-2 px-4 py-2.5 text-sm transition-colors",
       isSelected
         ? "bg-primary-subtle text-primary font-semibold"
-        : "text-foreground hover:bg-surface",
+        : "text-foreground hover:bg-foreground/[0.06]",
     )}
   >
     <span className="flex-1 truncate text-left">{label}</span>
